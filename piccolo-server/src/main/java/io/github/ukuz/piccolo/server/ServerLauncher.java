@@ -62,7 +62,7 @@ public class ServerLauncher {
              */
             server = new PiccoloServer();
         }
-
+        //启动服务
         server.runWebServer(args);
 
         if (processChain == null) {
@@ -73,18 +73,48 @@ public class ServerLauncher {
           */
         processChain.addLast(new ServiceRegistryBoot(server.getServiceRegistry(), server));
         /**
-         *
+         *MQ客户端
          */
         processChain.addLast(new MQClientBoot(server.getMQClient(), server));
+        /**
+         * 缓存管理
+         */
         processChain.addLast(new CacheManagerBoot(server.getCacheManager(), server));
+        /**
+         * 动态配置
+         */
         processChain.addLast(new ConfigCenterBoot(server.getDynamicConfiguration(), server));
+        /**
+         * 网关服务
+         */
         processChain.addLast(new ServerBoot(server.getGatewayServer(), true));
+        /**
+         * 连接服务
+         */
         processChain.addLast(new ServerBoot(server.getConnectServer()));
+        /**
+         * websocket服务
+         */
         processChain.addLast(new ServerBoot(server.getWebSocketServer()));
+        /**
+         * 路由中心服务
+         */
         processChain.addLast(new RouterCenterBoot(server.getRouterCenter()));
+        /**
+         *
+         */
         processChain.addLast(new RouteLocatorBoot(server.getRouteLocator(), server));
+        /**
+         * ID生成器
+         */
         processChain.addLast(new IdGenBoot(server.getIdGen()));
+        /**
+         * 监控，主要是metrics
+         */
         processChain.addLast(new MonitorBoot(server.getMonitor(), server));
+        /**
+         * bananer图
+         */
         processChain.addLast(lastJob);
     }
 

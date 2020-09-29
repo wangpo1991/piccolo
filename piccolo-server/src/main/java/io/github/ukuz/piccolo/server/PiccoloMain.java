@@ -27,14 +27,16 @@ public class PiccoloMain {
         ServerLauncher launcher = new ServerLauncher();
 
         /**
-         * 初始化程序加载器，主要用于加载服务组件
+         * 初始化程序加载器，主要用于加载服务组件，组件初始化
          */
         launcher.init(args);
         /**
          * 服务加载器维护了一个双向链表，组装了程序组件，此处启动最终会启动各组件以及
          */
         launcher.start();
-
+        /**
+         * 注册shutdown回调
+         */
         registerShutdownHook(launcher);
     }
 

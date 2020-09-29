@@ -86,19 +86,19 @@ public class PiccoloServer implements PiccoloContext {
         //initialize eventBus
         executorFactory = new MonitorExecutorFactory(new ServerExecutorFactory());
         EventBus.create(executorFactory.create(ExecutorFactory.EVENT_BUS, environment));
-
+        //处理注册中心
         String srdChooser = StringUtils.hasText(core.getSrd()) ? core.getSrd() : ServiceRegistryAndDiscovery.DEFAULT;
         srd = SpiLoader.getLoader(ServiceRegistryAndDiscovery.class).getExtension(srdChooser);
-
+        //处理MQ客户端
         mqClient = SpiLoader.getLoader(MQClient.class).getExtension();
-
+        //处理配置中心
         String configCenterChooser = StringUtils.hasText(core.getConfigCenter()) ? core.getConfigCenter() : DynamicConfiguration.DEFAULT;
         configCenter = SpiLoader.getLoader(DynamicConfiguration.class).getExtension(configCenterChooser);
-
+        //session管理器
         reusableSessionManager = new ReusableSessionManager(this);
-
+        //缓存管理器
         cacheManager = SpiLoader.getLoader(CacheManager.class).getExtension();
-
+        //路由中心
         routerCenter = new RouterCenter(this);
 
         routeLocator = SpiLoader.getLoader(RouteLocator.class).getExtension();
@@ -114,6 +114,10 @@ public class PiccoloServer implements PiccoloContext {
 
     }
 
+    /**
+     * 运行spring容器
+     * @param args
+     */
     public void runWebServer(String... args) {
         ConfigurableWebApplicationContext context = new AnnotationConfigWebApplicationContext();
         context.refresh();

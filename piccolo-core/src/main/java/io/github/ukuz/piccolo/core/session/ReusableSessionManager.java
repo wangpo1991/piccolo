@@ -24,6 +24,7 @@ import io.netty.util.internal.StringUtil;
 
 /**
  * @author ukuz90
+ * Reusable 可重复利用的
  */
 public final class ReusableSessionManager {
 
