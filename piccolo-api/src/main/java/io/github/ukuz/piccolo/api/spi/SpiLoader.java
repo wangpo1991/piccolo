@@ -39,7 +39,13 @@ import java.util.stream.Collectors;
  */
 public class SpiLoader<T> {
 
+    /**
+     * SPI容器
+     */
     private static final ConcurrentHashMap<Class<?>, SpiLoader> LOADERS = new ConcurrentHashMap<>();
+    /**
+     * SPI实例容器
+     */
     private static final ConcurrentHashMap<Class<?>, Holder<Object>> INSTANCES = new ConcurrentHashMap<>();
     private static final String PLUGIN_SERVICES = "META-INF/services/";
     private static final String PLUGIN_PICCOLO = "META-INF/piccolo/";
@@ -48,13 +54,21 @@ public class SpiLoader<T> {
     private final Holder<Map<String, Class<T>>> cachedClassHolder = new Holder<>();
     private final Holder<AnnotationTypeFilter> annotationTypeFilterHolder = new Holder<>();
     private final Class<T> type;
+    /**
+     * primarykey其实就是配置文件的=左侧的key或者@SPI的primary释义
+     */
     private final String primaryExtensionKey;
 
+    /**
+     * 摘取SPI信息
+     * @param type
+     */
     private SpiLoader(Class<T> type) {
         this.type = type;
         Spi spi = type.getAnnotation(Spi.class);
         primaryExtensionKey = spi.primary();
     }
+
 
     @SuppressWarnings("unchecked")
     public static <T> SpiLoader<T> getLoader(Class<T> type) {
@@ -67,6 +81,9 @@ public class SpiLoader<T> {
         if (!type.isAnnotationPresent(Spi.class)) {
             throw new IllegalArgumentException("Spi type " + type.getName() + " must annotated with @Spi");
         }
+        /**
+         * 注入SPI容器
+         */
         return LOADERS.computeIfAbsent(type, t -> new SpiLoader(t));
     }
 
@@ -143,6 +160,12 @@ public class SpiLoader<T> {
         return getInstance(holder, clazz);
     }
 
+    /**
+     * 获取实例
+     * @param holder
+     * @param clazz
+     * @return
+     */
     private T getInstance(Holder holder, Class<T> clazz) {
         Object obj = holder.getValue();
         if (obj == null) {
@@ -180,6 +203,10 @@ public class SpiLoader<T> {
         return extensionClassMap;
     }
 
+    /**
+     * 真正的SPI抓取类
+     * @return
+     */
     private Map<String, Class<T>> loadExtensionClass() {
         Map<String, Class<T>> extensionClassMap = new HashMap<>(16);
         loadDirectory(extensionClassMap, PLUGIN_SERVICES);
@@ -211,6 +238,11 @@ public class SpiLoader<T> {
 
     }
 
+    /**
+     * 装载SPI配置的文件，解析配置文件
+      * @param extensionClassMap
+     * @param url
+     */
     private void loadResource(Map<String, Class<T>> extensionClassMap, URL url) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
             String line;

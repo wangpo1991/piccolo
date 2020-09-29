@@ -31,6 +31,9 @@ public class ServerLauncher {
     private PiccoloServer server;
     private final Logger logger = LoggerFactory.getLogger(ServerLauncher.class);
 
+    /**
+     * 展现banner图
+     */
     private BootJob lastJob = new BootJob() {
         @Override
         public void start() {
@@ -49,9 +52,14 @@ public class ServerLauncher {
 
     public ServerLauncher() {
     }
-
+    /**
+     * 初始化服务组件
+     */
     public void init(String... args) {
         if (server == null) {
+            /**
+             * 初始化PiccoloServer
+             */
             server = new PiccoloServer();
         }
 
@@ -60,8 +68,13 @@ public class ServerLauncher {
         if (processChain == null) {
             processChain = newBootProcessChain();
         }
-
+        /**
+         * 注册服务
+          */
         processChain.addLast(new ServiceRegistryBoot(server.getServiceRegistry(), server));
+        /**
+         *
+         */
         processChain.addLast(new MQClientBoot(server.getMQClient(), server));
         processChain.addLast(new CacheManagerBoot(server.getCacheManager(), server));
         processChain.addLast(new ConfigCenterBoot(server.getDynamicConfiguration(), server));

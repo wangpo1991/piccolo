@@ -71,12 +71,17 @@ public class PiccoloServer implements PiccoloContext {
     private final RouteLocator routeLocator;
     private final IdGen idGen;
 
+    /**
+     * 初始化PiccoloServer，主要是加载一些配置文件
+     */
     public PiccoloServer() {
         //initialize config
         environment = SpiLoader.getLoader(Environment.class).getExtension();
+        //加载全部的配置文件类到configMap
         environment.scanAllProperties();
+        //加载配置文件，如果不存在则指定默认的配置文件 并初始化配置类
         environment.load(System.getProperty("piccolo.server.conf", "piccolo-server.properties"));
-
+        //加载核心配置文件
         CoreProperties core = environment.getProperties(CoreProperties.class);
         //initialize eventBus
         executorFactory = new MonitorExecutorFactory(new ServerExecutorFactory());

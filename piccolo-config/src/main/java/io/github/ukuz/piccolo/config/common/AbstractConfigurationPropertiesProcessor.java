@@ -60,6 +60,11 @@ public abstract class AbstractConfigurationPropertiesProcessor<T extends Configu
         wireTypeFunction.putIfAbsent(List.class, (key, configuration) -> configuration.getProperty(key));
     }
 
+    /**
+     * 注入绑定配置文件类的数据，通过反射注入
+     * @param configuration
+     * @param properties
+     */
     @Override
     public void process(T configuration, Properties properties) {
         logger.info("process " + properties.getClass().getName() + " begin.");
@@ -91,6 +96,11 @@ public abstract class AbstractConfigurationPropertiesProcessor<T extends Configu
         return result;
     }
 
+    /**
+     * 泛型擦除获取真正的泛型类型
+     * @param genericType
+     * @return
+     */
     protected Class findListActualType(Type genericType) {
         try {
             if (genericType instanceof ParameterizedType) {

@@ -31,6 +31,9 @@ import java.util.Set;
 
 /**
  * @author ukuz90
+ *
+ *
+ * 文件路径扫描器
  */
 public class ClassPathScanner {
 
@@ -56,6 +59,13 @@ public class ClassPathScanner {
         excludes.add(filter);
     }
 
+    /**
+     * 扫描加载类
+     * @param scanPackages
+     * @return
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
     public Set<Class> scan(String[] scanPackages) throws ClassNotFoundException, IOException {
         Set<Class> result = new HashSet<>();
         String javaPath = System.getProperty("java.class.path");

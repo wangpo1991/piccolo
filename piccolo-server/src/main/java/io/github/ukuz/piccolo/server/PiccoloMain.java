@@ -21,8 +21,18 @@ package io.github.ukuz.piccolo.server;
 public class PiccoloMain {
 
     public static void main(String[] args) {
+        /**
+         * 程序加载器
+         */
         ServerLauncher launcher = new ServerLauncher();
+
+        /**
+         * 初始化程序加载器，主要用于加载服务组件
+         */
         launcher.init(args);
+        /**
+         * 服务加载器维护了一个双向链表，组装了程序组件，此处启动最终会启动各组件以及
+         */
         launcher.start();
 
         registerShutdownHook(launcher);

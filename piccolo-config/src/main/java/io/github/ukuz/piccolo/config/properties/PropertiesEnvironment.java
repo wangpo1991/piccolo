@@ -65,6 +65,9 @@ public class PropertiesEnvironment implements Environment {
 
     @Override
     public void scanAllProperties() {
+        /**
+         * 防止多次扫描
+         */
         if (!isScan.compareAndSet(false, true)) {
             throw new EnvironmentException("repeat scan properties");
         }
@@ -78,6 +81,9 @@ public class PropertiesEnvironment implements Environment {
         try {
             Set<Class> classes = scanner.scan(new String[]{"io.github.ukuz.piccolo"});
             logger.info("scanAllProperties, scan class: " + classes);
+            /**
+             * 找到所有的类并过滤出Properties类型
+             */
             classes.parallelStream()
                     .filter(Properties.class::isAssignableFrom)
                     .forEach(this::newInstance);
@@ -87,6 +93,10 @@ public class PropertiesEnvironment implements Environment {
 
     }
 
+    /**
+     * 初始化配置类的容器configMap
+     * @param clazz
+     */
     private void newInstance(Class<?> clazz) {
         try {
             Properties properties = (Properties) clazz.newInstance();
@@ -126,6 +136,7 @@ public class PropertiesEnvironment implements Environment {
                     if (config.getValue() == null) {
                         PropertiesConfigurations configs = new PropertiesConfigurations();
                         Configuration c = configs.create(configFileName);
+                        //根据configMap中的配置类进行注入配置文件的数据
                         configMap.values()
                                 .forEach(properties -> processor.process(c, properties));
                         config.setValue(c);
@@ -146,6 +157,11 @@ public class PropertiesEnvironment implements Environment {
         return (T) configMap.getOrDefault(clazz.getName(), EMPTY);
     }
 
+    /**
+     * 延迟加载的配置类
+     * @param clazz
+     * @param <T>
+     */
     private <T extends Properties> void lazyInitialize(Class<T> clazz) {
         logger.info("lazyInitialize class: " + clazz.getName() + " begin.");
         if (!clazz.isAnnotationPresent(ConfigurationProperties.class)) {
